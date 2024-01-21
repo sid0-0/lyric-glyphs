@@ -3,7 +3,7 @@ import { createTRPCRouter, publicProcedure } from "../trpc";
 import { env } from "@/env";
 
 const getKeyFromUrl = (url: string) =>
-  url.split("lyrics/")[1]?.split(".")[0] ?? "";
+  new URLSearchParams(url.split("lyrics/")[1]?.split(".")[0] ?? "").toString().slice(0,-1);
 
 const mutateUrlToKey = (v: { url: string; autocomplete: string }[]) =>
   v.map((datum) => ({

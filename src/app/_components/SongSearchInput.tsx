@@ -1,5 +1,10 @@
 "use client";
-import React, { type KeyboardEventHandler, useCallback, useState } from "react";
+import React, {
+  type KeyboardEventHandler,
+  useCallback,
+  useState,
+  useMemo,
+} from "react";
 import _debounce, { type DebouncedFunc } from "lodash-es/debounce";
 import { Input } from "./ui/input";
 import { api } from "@/trpc/react";
@@ -9,20 +14,13 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
+import Link from "next/link";
 
 export const SongSearchInput = () => {
   const [st, sst] = useState("");
   const tracks = api.tracks.search.useQuery({ searchTerm: st });
-  const fetchSongs = async (searchTerm: string) => {
-    // update options in some store (can do with context too here)
-    console.log("making call", searchTerm);
-    sst(searchTerm);
-  };
 
-  const debouncedFetchSongs: DebouncedFunc<typeof fetchSongs> = _debounce(
-    fetchSongs,
-    1000,
-  );
+  const debouncedFetchSongs = useMemo(() => _debounce(sst, 1000), [sst]);
 
   const handleInputChange: KeyboardEventHandler<HTMLInputElement> = useCallback(
     (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -32,21 +30,40 @@ export const SongSearchInput = () => {
     [debouncedFetchSongs],
   );
 
+  const handleOptionClick = useCallback((event: React.MouseEvent) => {
+    // console.log(event.currentTarget);
+    // console.log(event.currentTarget.getAttribute("data-key"));
+    console.log("redirecting");
+    // redirect("./test");
+  }, []);
+
   return (
-    <div className="w-[50vw] min-w-52">
+    <div className="w-full min-w-52">
       <Input
         type="search"
         onKeyUp={handleInputChange}
         placeholder="Try `King Kunta`"
+        className="h-16 w-full text-xl"
       />
       {tracks.data?.map((track) => (
-        <div
-          key={track.url}
-          className="width-full my-4 rounded-md border border-solid border-black p-4 text-center"
-        >
-          {track.autocomplete}
-        </div>
+        <Link key={track.url} href={`${track.url}`}>
+          <div
+            key={track.url}
+            data-key={track.url}
+            className="width-full box-border cursor-pointer border border-solid border-black p-4 text-center hover:bg-gray-200"
+          >
+            {track.autocomplete}
+          </div>
+        </Link>
       ))}
+      {/* <Link key={"estelle/americanboy"} href={"estelle/americanboy"}>
+        <div
+          // onClick={handleOptionClick}
+          className="width-full box-border cursor-pointer border border-solid border-black p-4 text-center hover:bg-gray-200"
+        >
+          American Boy - Estelle
+        </div>
+      </Link> */}
     </div>
   );
 };
