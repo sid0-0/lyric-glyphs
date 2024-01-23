@@ -4,9 +4,10 @@ import React, { useCallback, useState } from "react";
 
 interface propTypes {
   lines: string[];
+  setSelectedLines: (arg0: string[]) => void;
 }
 
-export default function LineDisplay({ lines }: propTypes) {
+export default function LineDisplay({ lines, setSelectedLines }: propTypes) {
   const [selected, setSelected] = useState<Record<number, boolean>>({});
 
   const addLine = useCallback((event: React.MouseEvent<HTMLElement>) => {
@@ -19,9 +20,25 @@ export default function LineDisplay({ lines }: propTypes) {
     }));
   }, []);
 
+  const submit = useCallback(() => {
+    const keys = Object.keys(selected);
+    setSelectedLines(
+      keys.reduce<string[]>((acc, k) => {
+        const key = Number(k);
+        const v = lines[key];
+        if (selected[key] && v) {
+          return [...acc, v];
+        }
+        return acc;
+      }, []),
+    );
+  }, [selected, lines, setSelectedLines]);
+
   return (
     <div className="flex h-full w-full justify-center bg-green-300">
-      <div className="flex p-4 h-full items-center"> Click anywhere to continue</div>
+      <div className="flex h-full items-center p-4" onClick={submit}>
+        Click anywhere to continue
+      </div>
       <div className="h-full w-[70vw] overflow-auto">
         {lines.map((line, index) => (
           <div
@@ -35,7 +52,9 @@ export default function LineDisplay({ lines }: propTypes) {
           </div>
         ))}
       </div>
-      <div className="flex p-4 h-full items-center"> Click anywhere to continue</div>
+      <div className="flex h-full items-center p-4" onClick={submit}>
+        Click anywhere to continue
+      </div>
     </div>
   );
 }

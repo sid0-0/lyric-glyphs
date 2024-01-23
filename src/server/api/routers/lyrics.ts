@@ -8,14 +8,6 @@ export const lyricsRouter = createTRPCRouter({
       .then((d) => d.text())
       .then((d) => z.string().parse(d))
       .catch(() => "");
-    console.log(
-      page
-        .replaceAll(/(\n|\t)*/g, "")
-        .split("<br><br>")
-        .slice(2, -2)
-        .join("<br>")
-        .split("<br>"),
-    );
 
     const lines =
       page
@@ -25,7 +17,6 @@ export const lyricsRouter = createTRPCRouter({
         .join("<br>")
         .split("<br>")
         .map((s) => s.replaceAll(/<.*?>/g, "")) ?? [];
-    console.log(lines);
     return lines;
   }),
 });

@@ -3,7 +3,9 @@ import { createTRPCRouter, publicProcedure } from "../trpc";
 import { env } from "@/env";
 
 const getKeyFromUrl = (url: string) =>
-  new URLSearchParams(url.split("lyrics/")[1]?.split(".")[0] ?? "").toString().slice(0,-1);
+  new URLSearchParams(url.split("lyrics/")[1]?.split(".")[0] ?? "")
+    .toString()
+    .slice(0, -1);
 
 const mutateUrlToKey = (v: { url: string; autocomplete: string }[]) =>
   v.map((datum) => ({
@@ -12,11 +14,14 @@ const mutateUrlToKey = (v: { url: string; autocomplete: string }[]) =>
   }));
 
 const parseTracksList = (v: string) => {
+  const songObject = z.object({ url: z.string(), autocomplete: z.string() });
   const tracksSchema = z.object({
     term: z.string(),
-    lyrics: z.array(z.object({ url: z.string(), autocomplete: z.string() })),
+    songs: z.array(songObject),
+    lyrics: z.array(songObject),
   });
-  return tracksSchema.parse(v).lyrics;
+  const parsed = tracksSchema.parse(v);
+  return [...parsed.lyrics, ...parsed.songs];
 };
 
 export const trackRouter = createTRPCRouter({
