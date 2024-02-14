@@ -9,7 +9,7 @@ interface propTypes {
 const LyricsPage = async ({ params }: propTypes) => {
   const lyrics = await api.lyrics.bySong.query(params.songName);
   return (
-    <main className="mx-auto flex h-[100vh] flex-col items-center">
+    <main className="mx-auto flex h-[100vh] flex-col items-center justify-center">
       <ClientPage lines={lyrics} />
     </main>
   );
