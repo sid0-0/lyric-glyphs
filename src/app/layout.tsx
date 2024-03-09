@@ -1,12 +1,13 @@
 import "@/styles/globals.css";
 
-import { Inter } from "next/font/google";
+import { Lexend } from "next/font/google";
 
 import { TRPCReactProvider } from "@/trpc/react";
 
-const inter = Inter({
+const inter = Lexend({
   subsets: ["latin"],
   variable: "--font-sans",
+  weight: "600",
 });
 
 export const metadata = {
