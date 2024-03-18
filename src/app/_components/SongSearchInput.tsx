@@ -46,13 +46,12 @@ export const SongSearchInput = () => {
         className="h-16 w-full text-xl"
       />
       {tracks.data?.map((track) => (
-        <Link key={track.url} href={`${track.url}`}>
+        <Link key={track.id} href={`${track.id}`}>
           <div
-            key={track.url}
-            data-key={track.url}
+            key={track.id}
             className="width-full box-border cursor-pointer border border-solid border-black p-4 text-center hover:bg-gray-200"
           >
-            {track.autocomplete}
+            {track.name} - {track.artist}
           </div>
         </Link>
       ))}

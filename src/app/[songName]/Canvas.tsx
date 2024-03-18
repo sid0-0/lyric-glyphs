@@ -4,10 +4,11 @@ import * as PIXI from "pixi.js";
 
 interface propTypes {
   lines: string[];
+  artUrl: string;
 }
 
-export default function Canvas({ lines }: propTypes) {
-  const ctxRef = useRef<HTMLCanvasElement>(null);
+export default function Canvas({ lines, artUrl }: propTypes) {
+  const ctxRef = useRef<HTMLCanvasElement | null>(null);
 
   const generateCanvas = (el) => {
     document.body.style.backgroundColor = "#a87b38";
@@ -21,10 +22,23 @@ export default function Canvas({ lines }: propTypes) {
         // height: 400,
         backgroundColor: 0xa87b38,
       });
-      pixiApp.view.style.boxShadow = "0 0 10px black";
-      pixiApp.view.style.borderRadius = "10px";
+      pixiApp.canvas.style.boxShadow = "0 0 10px #222";
+      pixiApp.canvas.style.borderRadius = "10px";
       el.innerHTML = "";
       el.appendChild(pixiApp.canvas);
+
+      const texturePromise = PIXI.Assets.load(artUrl);
+      texturePromise.then((resolvedTexture) => {
+        const albumArt = PIXI.Sprite.from(resolvedTexture);
+        // center the sprite's anchor point
+        // albumArt.anchor.set(0.5);
+        albumArt.x = 40;
+        albumArt.y = 40;
+        albumArt.height = 120;
+        albumArt.width = 120;
+        pixiApp.stage.addChild(albumArt);
+      });
+
       const text = new PIXI.Text({
         text: lines.join("\n"),
         style: {
@@ -35,7 +49,7 @@ export default function Canvas({ lines }: propTypes) {
           wordWrapWidth: pixiApp.screen.width - 80,
         },
         x: 40,
-        y: 240,
+        y: 200,
       });
       pixiApp.stage.addChild(text);
     })();
@@ -58,5 +72,9 @@ export default function Canvas({ lines }: propTypes) {
     generateCanvas(ctxRef.current);
   }, [generateCanvas]);
 
-  return <div ref={ctxRef}></div>;
+  return (
+    <div>
+      <div ref={ctxRef}></div>
+    </div>
+  );
 }
