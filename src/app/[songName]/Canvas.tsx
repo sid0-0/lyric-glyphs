@@ -6,6 +6,11 @@ interface propTypes {
   lines: string[];
   artUrl: string;
 }
+import { Lexend } from "next/font/google";
+
+const font = Lexend({
+  subsets: ["latin"],
+});
 
 export default function Canvas({ lines, artUrl }: propTypes) {
   const ctxRef = useRef<HTMLCanvasElement | null>(null);
@@ -38,12 +43,11 @@ export default function Canvas({ lines, artUrl }: propTypes) {
         albumArt.width = 120;
         pixiApp.stage.addChild(albumArt);
       });
-
       const text = new PIXI.Text({
         text: lines.join("\n"),
         style: {
-          fontFamily: "Lexend Deca",
-          fontSize: 35,
+          fontFamily: font.style.fontFamily,
+          fontSize: 30,
           fill: 0xffffff,
           wordWrap: true,
           wordWrapWidth: pixiApp.screen.width - 80,
@@ -73,7 +77,7 @@ export default function Canvas({ lines, artUrl }: propTypes) {
   }, [generateCanvas]);
 
   return (
-    <div>
+    <div className={font.className}>
       <div ref={ctxRef}></div>
     </div>
   );

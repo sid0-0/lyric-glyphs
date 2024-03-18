@@ -6,8 +6,8 @@ import { TRPCReactProvider } from "@/trpc/react";
 
 const inter = Lexend({
   subsets: ["latin"],
-  variable: "--font-sans",
-  weight: "600",
+  // variable: "--font-sans",
+  // weight: "600",
 });
 
 export const metadata = {
@@ -23,7 +23,16 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`font-sans ${inter.variable}`}>
+      {/* <head>
+        <style jsx global>
+          {`
+            html {
+              font-family: ${inter.style.fontFamily};
+            }
+          `}
+        </style>
+      </head> */}
+      <body className={`font-sans ${inter.className}`}>
         <TRPCReactProvider>{children}</TRPCReactProvider>
       </body>
     </html>
