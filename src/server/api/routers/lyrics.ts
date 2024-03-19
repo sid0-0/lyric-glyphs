@@ -5,25 +5,32 @@ import { env } from "@/env";
 
 export const lyricsRouter = createTRPCRouter({
   bySong: publicProcedure.input(z.string()).query(async ({ input }) => {
-    const page = await fetch(`${env.SUPER_SPECIAL_LYRICS_URL}/${input}`)
+    const page = await fetch(env.SUPER_SPECIAL_LYRICS_URL.replace("#", input))
       .then((d) => d.text())
       .then((d) => z.string().parse(d))
       .catch(() => "");
 
-    const contentDom = new JSDOM(page)?.window?.document;
-    // console.log(
-    //   contentDom.window.document.getElementById("lyric-body-text").innerHTML,
-    // );
-    const lyrics = contentDom
-      ?.getElementById("lyric-body-text")
-      ?.innerHTML.split("\n")
-      .map((s) => s.replaceAll(/<.*?>/g, ""))
-      .filter((v) => !!v);
+    const lyrics =
+      page
+        .replaceAll(/(\n|\t|&quot;)*/g, "")
+        .split("<br><br>")
+        .slice(2, -2)
+        .join("<br>")
+        .split("<br>")
+        .map((s) => s.replaceAll(/<.*?>/g, "")) ?? [];
 
-    const title =
-      contentDom?.getElementById("lyric-title-text")?.innerHTML ?? "";
-    const artUrl =
-      contentDom?.querySelector(`img[title='${title}']`)?.src ?? "";
+    const [_, artist = "", name = ""] = page.match(
+      /<title>(.*?) - (.*?) Lyrics.*<\/title>/,
+    );
+    const artUrl = await fetch(
+      env.SUPER_SPECIAL_ALBUM_ART_URL.replace("<artist>", artist).replace(
+        "<title>",
+        name,
+      ),
+    )
+      .then((d) => d.text())
+      .then((s) => s.match(/data-src="(.*?)"/)?.[1] ?? "");
+
     return { lyrics, artUrl };
   }),
 });
